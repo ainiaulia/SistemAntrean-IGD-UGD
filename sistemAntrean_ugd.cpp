@@ -2,7 +2,7 @@
 #include <cstdio>
 using namespace std;
 
-struct Pasien{      
+struct Datapasien{      
     int noPasien;
     char nama[50];
     int umur;
@@ -12,21 +12,21 @@ struct Pasien{
 };
 
 struct Node{        
-    Pasien data;
-    Node* next;
+    Datapasien data;
+    Node *next;
 };
 
-Node* head = NULL;
+Node *head = NULL;
 
-void tambahLinkedList(Pasien pasien) {    
-    Node* newNode = new Node;
+void tambahLinkedList(Datapasien pasien) {    
+    Node *newNode = new Node;
     newNode->data = pasien;
     newNode->next = NULL;
 
     if (head == NULL) {
         head = newNode;
     }else {
-        Node* temp = head;
+        Node *temp = head;
         while (temp->next != NULL) {
             temp = temp->next;
         }
@@ -35,8 +35,8 @@ void tambahLinkedList(Pasien pasien) {
 }
 
 void hapusLinkedList() {    
-    Node* current = head;
-    Node* next = NULL;
+    Node *current = head;
+    Node *next = NULL;
 
     while (current != NULL) {
         next = current->next;
@@ -46,7 +46,7 @@ void hapusLinkedList() {
     head = NULL;
 }
 
-void simpanFile(Pasien pasien) {   
+void simpanFile(Datapasien pasien) {   
     FILE *file = fopen("data_pasien.txt", "a");
     if (file == NULL) {
         cout << "Gagal membuka file!" << endl;
@@ -57,7 +57,7 @@ void simpanFile(Pasien pasien) {
 }
 
 void inputPasien() {    
-    Pasien pasien;
+    Datapasien pasien;
     int jmlInput;
 
     cout << "========== INPUT DATA PASIEN ==========\n" << endl;
@@ -103,7 +103,7 @@ void tampilkanData() {
     }
 
     hapusLinkedList();
-    Pasien pasien;
+    Datapasien pasien;
 
     cout << "\n========== DATA PASIEN ==========\n" << endl;
     while (fscanf(file, "%d,%[^,],%d,%[^,],%d,%[^\n]", &pasien.noPasien, pasien.nama, &pasien.umur, pasien.keluhan, &pasien.prioritas, pasien.status) != EOF) {
