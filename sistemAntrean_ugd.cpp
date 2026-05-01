@@ -11,6 +11,41 @@ struct Pasien{
     char status[20];
 };
 
+struct Node{        
+    Pasien data;
+    Node* next;
+};
+
+Node* head = NULL;
+
+void tambahLinkedList(Pasien pasien) {    
+    Node* newNode = new Node;
+    newNode->data = pasien;
+    newNode->next = NULL;
+
+    if (head == NULL) {
+        head = newNode;
+    }else {
+        Node* temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
+}
+
+void hapusLinkedList() {    
+    Node* current = head;
+    Node* next = NULL;
+
+    while (current != NULL) {
+        next = current->next;
+        delete current;
+        current = next;
+    }
+    head = NULL;
+}
+
 void simpanFile(Pasien pasien) {   
     FILE *file = fopen("data_pasien.txt", "a");
     if (file == NULL) {
@@ -18,7 +53,6 @@ void simpanFile(Pasien pasien) {
         return;
     }
     fprintf(file, "%d,%s,%d,%s,%d,%s\n", pasien.noPasien, pasien.nama, pasien.umur, pasien.keluhan, pasien.prioritas, pasien.status);
-   
     fclose(file);
 }
 
@@ -68,10 +102,13 @@ void tampilkanData() {
         return;
     }
 
+    hapusLinkedList();
     Pasien pasien;
 
     cout << "\n========== DATA PASIEN ==========\n" << endl;
     while (fscanf(file, "%d,%[^,],%d,%[^,],%d,%[^\n]", &pasien.noPasien, pasien.nama, &pasien.umur, pasien.keluhan, &pasien.prioritas, pasien.status) != EOF) {
+        
+        tambahLinkedList(pasien);
         cout << "No Pasien : " << pasien.noPasien << endl;
         cout << "Nama      : " << pasien.nama << endl;
         cout << "Umur      : " << pasien.umur << endl;
@@ -98,7 +135,7 @@ int main() {
         cout << "Pilih menu: ";
         cin >> pilih;
         if (pilih < 0 || pilih > 3) {
-            cout << "Pilihan tidak valid! Silakan pilih menu yang tersedia." << endl;
+            cout << "\nPilihan tidak valid! Silakan pilih menu yang tersedia." << endl;
             cout << "Pilih menu: ";
             cin >> pilih;
         } else {
@@ -119,9 +156,13 @@ int main() {
         case 0:
             cout << "Terima kasih!" << endl;
             break;
-        default:
-            cout << "Pilihan tidak valid!" << endl;
     }
+
+    cout << "\nTekan Enter untuk lanjut...";
+    cin.ignore();
+    cin.get();
+
    }while (pilih != 0);
+
     return 0;
 }
