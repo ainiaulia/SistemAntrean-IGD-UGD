@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdio>
+#include <cstring>
 using namespace std;
 
 struct Datapasien{      
@@ -119,7 +120,109 @@ void tampilkanData() {
     }
     fclose(file);
 }
+void tampilPasien(Node *temp) {
+    cout << "\n--- Pasien Ditemukan ---" << endl;
+    cout << "No Pasien : " << temp->data.noPasien << endl;
+    cout << "Nama      : " << temp->data.nama << endl;
+    cout << "Umur      : " << temp->data.umur << endl;
+    cout << "Keluhan   : " << temp->data.keluhan << endl;
+    cout << "Prioritas : " << temp->data.prioritas << endl;
+    cout << "Status    : " << temp->data.status << endl;
+    cout << "---------------------------------" << endl;
+}
 
+void searchingpasien()
+{   
+	FILE *file = fopen("data_pasien.txt", "r"); 
+    if (file == NULL) 
+    {cout << "Gagal membuka file atau file belum ada!" << endl;
+     return;}
+    hapusLinkedList(); //function hapus, agar linked list tidak duplikat saat di searching berkali-kali
+    Datapasien pasien; //data pasien
+    while (fscanf(file, "%d,%[^,],%d,%[^,],%d,%[^\n]", &pasien.noPasien, pasien.nama, &pasien.umur, pasien.keluhan, &pasien.prioritas, pasien.status) != EOF) 
+    {tambahLinkedList(pasien);} //function tambah, buat linkedlist baru
+    fclose(file);
+    if (head == NULL) 
+    {cout << "Data pasien kosong!" << endl;
+     return;}
+      
+    int pilihCari;
+    cout << endl;
+    cout << "========== CARI PASIEN ==========" << endl;
+    cout << "1. Cari berdasarkan No Pasien" << endl;
+    cout << "2. Cari berdasarkan Nama" << endl;
+    cout << "3. Cari berdasarkan Prioritas" << endl;
+    cout << "Pilih: ";
+    cin >> pilihCari;
+    bool ditemukan = false;
+    switch(pilihCari) 
+    {
+        case 1: 
+        {int cariNo;
+         cout << "Masukkan No Pasien yang dicari: ";
+		 while (!(cin >> cariNo)) //validasi jika memasukkan tidak sesuai tipe data
+		 {
+         cin.clear();              // reset error cin
+         cin.ignore(100, '\n');    // mengabaikan buffer
+         cout << "Input tidak valid! Masukkan angka: ";
+         }
+         Node *temp = head;
+         while (temp != NULL) 
+           {if (temp->data.noPasien == cariNo) 
+			{
+              tampilPasien(temp);
+              ditemukan = true;
+              break;
+             }
+              temp = temp->next;
+            }
+            break;
+        }
+
+        case 2: 
+        {char cariNama[50];
+         cout << "Masukkan Nama Pasien yang dicari: ";
+         cin.ignore();
+         cin.getline(cariNama, 50);
+         Node *temp = head;
+         while (temp != NULL) 
+			{if (strstr(temp->data.nama, cariNama) != NULL) 
+                {
+                 tampilPasien(temp);
+                 ditemukan = true;
+                }
+                temp = temp->next;
+            }
+            break;
+        }
+
+        case 3: 
+        {int cariPrioritas;
+         cout << "Masukkan Prioritas yang dicari (1-3): ";
+         while (!(cin >> cariPrioritas)|| cariPrioritas < 1 || cariPrioritas > 3) //validasi jika memasukkan tidak sesuai tipe data
+		 {
+         cin.clear();              // reset error cin
+         cin.ignore(100, '\n');    // mengabaikan buffer
+         cout << "Input tidak valid! Masukkan angka (1-3): ";
+         }
+         Node *temp = head;
+         while (temp != NULL) 
+			{if (temp->data.prioritas == cariPrioritas) 
+			  {
+                tampilPasien(temp);
+                 ditemukan = true;
+                }
+                temp = temp->next;
+			  }
+            break;
+        }
+        
+     default: cout << "Pilihan tidak valid!" << endl;
+     return;
+    }
+    if (!ditemukan) 
+    {cout << "\nPasien tidak ditemukan!" << endl;}
+}
 int main() {
    int pilih;
     
@@ -151,7 +254,7 @@ int main() {
             tampilkanData();
             break;
         case 3:
-            cout << "Cari Pasien";
+            searchingpasien();
             break;
         case 0:
             cout << "Terima kasih!" << endl;
