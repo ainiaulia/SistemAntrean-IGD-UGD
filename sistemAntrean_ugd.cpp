@@ -177,7 +177,6 @@ void bacaDataDariFile() {
 }
 
 // ==================== MENU 2: TAMPILKAN SEMUA DATA PASIEN ====================
-
 void tampilData() {   
     bacaDataDariFile();  // Baca data dari file ke linked list
     
@@ -230,7 +229,6 @@ void tukarData(Node *a, Node *b) {
 }
 
 // ==================== MENU 4: SORTING DATA PASIEN ====================
-
 void sortingData() {
     bacaDataDariFile();
     
@@ -290,6 +288,91 @@ void sortingData() {
     
     cout << "\nHasil setelah sorting:" << endl;
     tampilData();
+}
+
+// ==================== MENU 5: TAMPILAN ANTRIAN BY URGENSI ====================
+void tampilAntrianByUrgensi() {
+    bacaDataDariFile();
+    
+    if (head == NULL) {
+        cout << "\nBelum ada data pasien!\n" << endl;
+        return;
+    }
+    
+    
+    Node *sortedHead = NULL;
+    Node *temp = head;
+    while (temp != NULL) {
+        Node *newNode = new Node;
+        newNode->data = temp->data;
+        newNode->next = NULL;
+        
+        if (sortedHead == NULL) {
+            sortedHead = newNode;
+        } else {
+            Node *last = sortedHead;
+            while (last->next != NULL) {
+                last = last->next;
+            }
+            last->next = newNode;
+        }
+        temp = temp->next;
+    }
+    
+    // Sorting berdasarkan prioritas (ascending)
+    if (sortedHead != NULL && sortedHead->next != NULL) {
+        bool swapped;
+        Node *ptr1;
+        Node *lptr = NULL;
+        
+        do {
+            swapped = false;
+            ptr1 = sortedHead;
+            
+            while (ptr1->next != lptr) {
+                if (ptr1->data.prioritas > ptr1->next->data.prioritas) {
+                    Datapasien tempData = ptr1->data;
+                    ptr1->data = ptr1->next->data;
+                    ptr1->next->data = tempData;
+                    swapped = true;
+                }
+                ptr1 = ptr1->next;
+            }
+            lptr = ptr1;
+        } while (swapped);
+    }
+    
+    // Tampilkan antrian berdasarkan urgensi
+    cout << "\n========== ANTRIAN PASIEN BERDASARKAN URGENSI ==========\n" << endl;
+    cout << "Urutan prioritas: Gawat Darurat (1) -> Sedang (2) -> Ringan (3)\n" << endl;
+    
+    int urutan = 1;
+    Node *current = sortedHead;
+    while (current != NULL) {
+        cout << "Antrian ke-" << urutan << ":" << endl;
+        cout << "   No Pasien : " << current->data.noPasien << endl;
+        cout << "   Nama      : " << current->data.nama << endl;
+        cout << "   Umur      : " << current->data.umur << endl;
+        cout << "   Keluhan   : " << current->data.keluhan << endl;
+        cout << "   Prioritas : " << current->data.prioritas;
+        if (current->data.prioritas == 1) cout << " (Gawat Darurat)";
+        else if (current->data.prioritas == 2) cout << " (Sedang)";
+        else if (current->data.prioritas == 3) cout << " (Ringan)";
+        cout << endl;
+        cout << "   Status    : " << current->data.status << endl;
+        cout << "   ---------------------------------\n" << endl;
+        
+        urutan++;
+        current = current->next;
+    }
+    
+    // Hapus linked list copy untuk menghindari memory leak
+    current = sortedHead;
+    while (current != NULL) {
+        Node *hapus = current;
+        current = current->next;
+        delete hapus;
+    }
 }
 
 // ==================== MENU 3: EDIT DATA (berdasarkan No Pasien) ====================
@@ -353,7 +436,6 @@ void editDataPasien() {
 }
 
 // ==================== MENU 3: HAPUS DATA (berdasarkan No Pasien) ====================
-
 void hapusDataPasien() {
     int hapusNo;
     cout << "\nMasukkan No Pasien yang akan dihapus: ";
@@ -529,13 +611,14 @@ int main() {
     cout << "2. Tampilkan Semua Data Pasien" << endl;
     cout << "3. Cari / Edit / Hapus Pasien" << endl;
     cout << "4. Sorting Data Pasien" << endl;
+    cout << "5. Tampilkan Antrian by Urgensi" << endl;
     cout << "0. Keluar" << endl;
     cout << "==========================================================" << endl;
     cout << "Pilih menu: ";
     cin >> pilih;
     
-    if (pilih < 0 || pilih > 4) {
-        cout << "\nPilihan tidak valid! Silakan pilih menu 0-4." << endl;
+    if (pilih < 0 || pilih > 5) {
+        cout << "\nPilihan tidak valid! Silakan pilih menu 0-5." << endl;
         cout << "\nTekan Enter untuk lanjut...";
         cin.ignore();
         cin.get();
@@ -554,6 +637,9 @@ int main() {
             break;
         case 4:
             sortingData();  // MENU 4
+            break;
+        case 5:
+            tampilAntrianByUrgensi();  // MENU 5
             break;
         case 0:
             cout << "\nTerima kasih telah menggunakan Sistem Antrian UGD!" << endl;
